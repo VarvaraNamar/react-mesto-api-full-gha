@@ -1,0 +1,29 @@
+.elements {
+  margin: 50px auto 0;
+  padding: 0;
+  display: grid;
+  justify-items: center;
+  grid-template-columns: repeat(auto-fit, minmax(282px, 1fr));
+  gap: 20px 17px;
+  max-width: 880px;
+}
+
+@media (max-width: 880px) {
+  .elements {
+    padding: 0 19px;
+    max-width: 95.7%;
+  }
+}
+
+@media (max-width: 450px) {
+  .elements {
+    margin-top: 36px;
+    gap: 19px;
+  }
+}
+
+@media (max-width: 320px) {
+  .elements {
+    max-width: 100%;
+  }
+}

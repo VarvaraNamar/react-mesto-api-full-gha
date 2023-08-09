@@ -1,0 +1,14 @@
+.profile__edit-bio {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  max-width: 336px;
+}
+
+@media (max-width: 680px) {
+  .profile__edit-bio {
+    padding-left: 28px;
+    max-width: 282px;
+  }
+}
