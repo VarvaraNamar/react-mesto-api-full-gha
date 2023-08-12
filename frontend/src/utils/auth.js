@@ -1,4 +1,4 @@
-export const BASE_URL = "https://auth.nomoreparties.co";
+export const BASE_URL = "https://api.varvara.nomoreparties.co";
 
 function checkResponse(res) {
   if (res.ok) {
@@ -35,7 +35,7 @@ export async function getToken(jwt) {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      "Authorization" : `Bearer ${jwt}`,
+      authorization : `Bearer ${jwt}`,
     },
   });
   return checkResponse(res);

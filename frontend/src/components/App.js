@@ -1,112 +1,115 @@
-import React from 'react';
-import { Route, Routes, Navigate, useNavigate } from 'react-router-dom';
-import CurrentUserContext from '../contexts/CurrentUserContext';
-import Header from './Header';
-import Main from './Main';
-import Footer from './Footer';
-import PopupWithForm from './PopupWithForm';
-import ImagePopup from './ImagePopup';
-import EditProfilePopup from './EditProfilePopup';
-import EditAvatarPopup from './EditAvatarPopup';
-import AddPlacePopup from './AddPlacePopup';
-import api from '../utils/Api';
-import * as auth from '../utils/auth';
-import ProtectedRoute from './ProtectedRoute';
-import Register from './Register';
-import Login from './Login';
-import InfoTooltip from './InfoTooltip';
-import success from '../images/Union.png';
-import fail from '../images/Unionx.png';
+import React from "react"
+import { Route, Routes, Navigate, useNavigate } from "react-router-dom"
+import CurrentUserContext from "../contexts/CurrentUserContext"
+import Header from "./Header"
+import Main from "./Main"
+import Footer from "./Footer"
+import PopupWithForm from "./PopupWithForm"
+import ImagePopup from "./ImagePopup"
+import EditProfilePopup from "./EditProfilePopup"
+import EditAvatarPopup from "./EditAvatarPopup"
+import AddPlacePopup from "./AddPlacePopup"
+import api from "../utils/Api"
+import * as auth from "../utils/auth"
+import ProtectedRoute from "./ProtectedRoute"
+import Register from "./Register"
+import Login from "./Login"
+import InfoTooltip from "./InfoTooltip"
+import success from "../images/Union.png"
+import fail from "../images/Unionx.png"
 
 function App() {
-  const [isEditAvatarPopupOpen, setEditAvatarPopupOpened] = React.useState(false);
-  const [isAddPlacePopupOpen, setAddPlacePopupOpened] = React.useState(false);
-  const [isEditProfilePopupOpen, setEditProfilePopupOpened] = React.useState(false);
-  const [isInfoTooltipOpen, setInfoTooltipOpened] = React.useState(false);
-  const [selectedCard, setSelectedCard] = React.useState(null);
-  const [currentUser, setCurrentUser] = React.useState({});
-  const [cards, setCards] = React.useState([]);
-  const [email, setEmail] = React.useState('');
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [isLoggedIn, setLoggedIn] = React.useState(false);
-  const [text, setText] = React.useState('');
-  const [image, setImage] = React.useState('');
+  const [isEditAvatarPopupOpen, setEditAvatarPopupOpened] =
+    React.useState(false)
+  const [isAddPlacePopupOpen, setAddPlacePopupOpened] = React.useState(false)
+  const [isEditProfilePopupOpen, setEditProfilePopupOpened] =
+    React.useState(false)
+  const [isInfoTooltipOpen, setInfoTooltipOpened] = React.useState(false)
+  const [selectedCard, setSelectedCard] = React.useState(null)
+  const [currentUser, setCurrentUser] = React.useState({})
+  const [cards, setCards] = React.useState([])
+  const [email, setEmail] = React.useState("")
+  const [isLoading, setIsLoading] = React.useState(false)
+  const [isLoggedIn, setLoggedIn] = React.useState(false)
+  const [text, setText] = React.useState("")
+  const [image, setImage] = React.useState("")
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   function handleInfoTooltip() {
-    setInfoTooltipOpened(true);
+    setInfoTooltipOpened(true)
   }
   function handleRegister(email, password) {
     auth
       .register(email, password)
       .then(() => {
-        setImage(success);
-        setText("Вы успешно зарегистрировались!");
-        navigate('/sign-in', { replace: true });
+        setImage(success)
+        setText("Вы успешно зарегистрировались!")
+        navigate("/sign-in", { replace: true })
       })
       .catch(() => {
-        setImage(fail);
-        setText("Что-то пошло не так! Попробуйте ещё раз.");
+        setImage(fail)
+        setText("Что-то пошло не так! Попробуйте ещё раз.")
       })
-      .finally(handleInfoTooltip());
+      .finally(handleInfoTooltip())
   }
 
   function handleLogin(email, password) {
     auth
       .login(email, password)
-      .then(res => {
-        localStorage.setItem('jwt', res.token);
-        setLoggedIn(true);
-        setEmail(email);
-        navigate('/', { replace: true });
+      .then((res) => {
+        localStorage.setItem("jwt", res.token)
+        setLoggedIn(true)
+        setEmail(email)
+        navigate("/", { replace: true })
       })
       .catch(() => {
-        setImage(fail);
-        setText("Что-то пошло не так! Попробуйте ещё раз.");
-      });
+        setImage(fail)
+        setText("Что-то пошло не так! Попробуйте ещё раз.")
+      })
   }
 
   function checkToken() {
-    const jwt = localStorage.getItem('jwt');
+    const jwt = localStorage.getItem("jwt")
     if (jwt) {
       auth
         .getToken(jwt)
-        .then(res => {
+        .then((res) => {
           if (res) {
-            setLoggedIn(true);
-            navigate('/', { replace: true });
-            setEmail(res.data.email);
+            setLoggedIn(true)
+            navigate("/", { replace: true })
+            setEmail(res.email)
           }
         })
-        .catch(err => {
-          console.error(err);
-        });
+        .catch((err) => {
+          console.error(err)
+        })
     }
   }
 
   function handleSignOut() {
-    localStorage.removeItem('jwt');
-    setLoggedIn(false);
-    navigate('/sign-in', { replace: true });
+    localStorage.removeItem("jwt")
+    setLoggedIn(false)
+    navigate("/sign-in", { replace: true })
   }
 
-  React.useEffect (()=> {
-    checkToken();
+  React.useEffect(() => {
+    checkToken()
     // eslint-disable-next-line
   }, [])
 
   React.useEffect(() => {
+    isLoggedIn &&
     api
       .getStartData()
       .then(([userData, cards]) => {
-        setCurrentUser(userData);
-        setCards(cards);
+        setCurrentUser(userData)
+        setCards(cards.data.reverse())
       })
-      .catch(err => console.log(err));
-  }, []);
+      .catch((err) => console.log(err))
+  }, [isLoggedIn])
 
-  function handleCardLike(card) {
+  /* function handleCardLike(card) {
     const isLiked = card.likes.some(i => i._id === currentUser._id);
     api
       .changeLikeCardStatus(card._id, !isLiked)
@@ -114,121 +117,134 @@ function App() {
         setCards(state => state.map(c => (c._id === card._id ? newCard : c)));
       })
       .catch(err => console.log(err));
+  }*/
+
+  function handleCardLike(card) {
+    const isLiked = card.likes.some((user) => user === currentUser._id);
+    (isLiked ? api.dislikeCardCard(card._id) : api.setLikeCard(card._id, true))
+      .then((newCard) => {
+        console.log(newCard)
+        setCards((state) =>
+          state.map((c) => (c._id === newCard.data._id ? newCard.data : c))
+        )
+      })
+      .catch((err) => console.log(err))
   }
 
   function handleCardDelete(card) {
     api
       .deleteCard(card._id)
       .then(() => {
-        setCards(state => state.filter(c => c._id !== card._id));
+        setCards((state) => state.filter((c) => c._id !== card._id))
       })
       .then(() => closeAllPopups())
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err))
   }
 
   function handleCardClick(card) {
-    setSelectedCard(card);
+    setSelectedCard(card)
   }
 
   function handleEditAvatarClick() {
-    setEditAvatarPopupOpened(true);
+    setEditAvatarPopupOpened(true)
   }
 
   function handleUpdateAvatar(userData) {
-    setIsLoading(true);
+    setIsLoading(true)
     api
       .setUserAvatarApi(userData)
-      .then(data => {
-        setCurrentUser(data);
+      .then((data) => {
+        setCurrentUser(data)
       })
       .then(() => closeAllPopups())
-      .catch(err => console.log(err))
+      .catch((err) => console.log(err))
       .finally(() => {
-        setIsLoading(false);
-      });
+        setIsLoading(false)
+      })
   }
 
   function handleAddPlaceClick() {
-    setAddPlacePopupOpened(true);
+    setAddPlacePopupOpened(true)
   }
 
   function handleAddPlaceSubmit(cardData) {
-    setIsLoading(true);
+    setIsLoading(true)
     api
-      .addNewCard(cardData)
-      .then(newCard => {
-        setCards([newCard, ...cards]);
+      .createCard(cardData)
+      .then((newCard) => {
+        setCards([newCard.data, ...cards])
       })
       .then(() => closeAllPopups())
-      .catch(err => console.log(err))
+      .catch((err) => console.log(err))
       .finally(() => {
-        setIsLoading(false);
-      });
+        setIsLoading(false)
+      })
   }
 
   function handleEditProfileClick() {
-    setEditProfilePopupOpened(true);
+    setEditProfilePopupOpened(true)
   }
 
   function handleUpdateUser(userData) {
-    setIsLoading(true);
+    setIsLoading(true)
     api
       .setUserInfoApi(userData)
-      .then(data => {
-        setCurrentUser(data);
+      .then((data) => {
+        setCurrentUser(data)
       })
       .then(() => closeAllPopups())
-      .catch(err => console.log(err))
+      .catch((err) => console.log(err))
       .finally(() => {
-        setIsLoading(false);
-      });
+        setIsLoading(false)
+      })
   }
 
   function closeAllPopups() {
-    setEditAvatarPopupOpened(false);
-    setAddPlacePopupOpened(false);
-    setEditProfilePopupOpened(false);
-    setSelectedCard(null);
-    setInfoTooltipOpened(false);
+    setEditAvatarPopupOpened(false)
+    setAddPlacePopupOpened(false)
+    setEditProfilePopupOpened(false)
+    setSelectedCard(null)
+    setInfoTooltipOpened(false)
   }
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
-      <Header email={email} onSignOut={handleSignOut} isLoggedIn={isLoggedIn}/>
+        <Header
+          email={email}
+          onSignOut={handleSignOut}
+          isLoggedIn={isLoggedIn}
+        />
         <Routes>
-          <Route path="*" element={isLoggedIn ? <Navigate to="/" /> : <Navigate to="/sign-in" />} />
           <Route
-            path="/sign-in"
+            path="*"
             element={
-              <Login onLogin={handleLogin} /> 
+              isLoggedIn ? <Navigate to="/" /> : <Navigate to="/sign-in" />
             }
           />
+          <Route path="/sign-in" element={<Login onLogin={handleLogin} />} />
           <Route
             path="/sign-up"
-            element={
-                <Register onRegister={handleRegister} 
-                />
-            }
+            element={<Register onRegister={handleRegister} />}
           />
           <Route
             path="/"
             element={
-                <ProtectedRoute
-                  element={Main}
-                  isLoggedIn={isLoggedIn}
-                  cards={cards}
-                  onEditProfile={handleEditProfileClick}
-                  onEditAvatar={handleEditAvatarClick}
-                  onAddPlace={handleAddPlaceClick}
-                  onCardClick={handleCardClick}
-                  onCardLike={handleCardLike}
-                  onCardDelete={handleCardDelete}
-                />
+              <ProtectedRoute
+                element={Main}
+                isLoggedIn={isLoggedIn}
+                cards={cards}
+                onEditProfile={handleEditProfileClick}
+                onEditAvatar={handleEditAvatarClick}
+                onAddPlace={handleAddPlaceClick}
+                onCardClick={handleCardClick}
+                onCardLike={handleCardLike}
+                onCardDelete={handleCardDelete}
+              />
             }
           />
         </Routes>
-        <Footer />     
+        <Footer />
 
         <EditProfilePopup
           isOpen={isEditProfilePopupOpen}
@@ -269,7 +285,7 @@ function App() {
         />
       </div>
     </CurrentUserContext.Provider>
-  );
+  )
 }
 
-export default App;
+export default App

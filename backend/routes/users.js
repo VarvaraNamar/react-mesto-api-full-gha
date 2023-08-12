@@ -1,29 +1,47 @@
-const { Router } = require('express');
+const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 
+const { regExp } = require('../utils/constants');
 const {
-  getCurrentUser, getUsers, getUser, updateUser, updateAvatar,
+  getUsers,
+  getUserId,
+  getCurrentUser,
+  updateUser,
+  updateAvatar,
 } = require('../controllers/users');
 
-const usersRouter = Router();
+router.get('/', getUsers);
+router.get('/me', getCurrentUser);
 
-usersRouter.get('/', getUsers);
-usersRouter.get('/me', getCurrentUser);
-usersRouter.get('/:userId', celebrate({
-  params: Joi.object().keys({
-    userId: Joi.string().length(24).hex().required(),
+router.get(
+  '/:id',
+  celebrate({
+    params: Joi.object().keys({
+      id: Joi.string().length(24).hex().required(),
+    }),
   }),
-}), getUser);
-usersRouter.patch('/me', celebrate({
-  body: Joi.object().keys({
-    name: Joi.string().min(2).max(30).required(),
-    about: Joi.string().min(2).max(30).required(),
-  }),
-}), updateUser);
-usersRouter.patch('/me/avatar', celebrate({
-  body: Joi.object().keys({
-    avatar: Joi.string().regex(/https?:\/\/([a-z0-9-]+\.)*[a-z0-9-]+\.[a-z]{2,}\/?([^\s]*)$/),
-  }),
-}), updateAvatar);
+  getUserId,
+);
 
-module.exports = usersRouter;
+router.patch(
+  '/me',
+  celebrate({
+    body: Joi.object().keys({
+      name: Joi.string().min(2).max(30).required(),
+      about: Joi.string().min(2).max(30).required(),
+    }),
+  }),
+  updateUser,
+);
+
+router.patch(
+  '/me/avatar',
+  celebrate({
+    body: Joi.object().keys({
+      avatar: Joi.string().pattern(regExp).required(),
+    }),
+  }),
+  updateAvatar,
+);
+
+module.exports = router;
