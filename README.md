@@ -6,7 +6,7 @@
 
 ## Адрес репозитория: 
 
-https://github.com/
+https://varvaranamar.github.io/react-mesto-api-full-gha/
 
 ## Ссылки на проект:
 

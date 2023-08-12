@@ -64,6 +64,7 @@ function App() {
         navigate("/", { replace: true })
       })
       .catch(() => {
+        handleInfoTooltip()
         setImage(fail)
         setText("Что-то пошло не так! Попробуйте ещё раз.")
       })
@@ -209,6 +210,7 @@ function App() {
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
+      <div className="root">
       <div className="page">
         <Header
           email={email}
@@ -283,6 +285,7 @@ function App() {
           isOpen={isInfoTooltipOpen}
           onClose={closeAllPopups}
         />
+      </div>
       </div>
     </CurrentUserContext.Provider>
   )

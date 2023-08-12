@@ -7,3 +7,18 @@
   text-align: right;
   color: #fff;
 }
+
+@media (max-width: 580px) {
+  .header__email {
+   font-size: 15px;
+   line-height: 20px;
+ }
+ }
+ 
+ @media (max-width: 370px) {
+   .header__email {
+    font-size: 10px;
+    line-height: 20px;
+    margin: 0 10px 0 0;
+  }
+  }
