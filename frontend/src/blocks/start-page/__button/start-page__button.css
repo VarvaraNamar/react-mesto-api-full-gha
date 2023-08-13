@@ -21,3 +21,13 @@
 .start-page__button:hover {
   opacity: 0.85;
 }
+
+@media screen and (max-width: 510px) {
+  .start-page__button {
+    width: 260px;
+    height: 46px;
+    font-size: 16px;
+    line-height: 19px;
+    margin: 173px auto 77px;
+  }
+}
